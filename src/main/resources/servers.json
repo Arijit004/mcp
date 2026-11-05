@@ -1,0 +1,56 @@
+{
+  // mcpServers is the root object that contains one or more MCP server configurations.
+  // visit "https://github.com/modelcontextprotocol/servers" to find out about other available tools in mcpserver and their json config
+  "mcpServers": {
+    // filesystem is the name (alias) of this MCP server.
+    // You can choose any name, such as github, jira, weather, or ticket-service.
+    "filesystem": {
+      // Specifies the executable Spring AI should run to start the MCP server.
+      // Here, it runs the server using Node.js via npx.
+      "command": "npx",
+      // Lists the command-line arguments passed to npx.
+      "args": [
+        // equivalent to "npx -y"
+        // Automatically answers "yes" to any prompts from npx.
+        // This allows the package to be downloaded and executed without interactive confirmation.
+        "-y",
+        // The npm package that implements the Filesystem MCP Server.
+        // Spring AI launches this package as a child process.
+        // Equivalent to: npx -y @modelcontextprotocol/server-filesystem
+        "@modelcontextprotocol/server-filesystem",
+        // These are the allowed directories the filesystem server can access.
+        // The server is sandboxed to these paths and cannot read or modify files outside them.
+        "/Users/Arijit/all codes/java/spring ai/mcp-local",
+        "/Users/Arijit/all codes/java/spring ai/mcp-backup"
+      ]
+    }
+  }
+}
+
+
+/*
+  What Spring AI actually does :
+    When your application starts, Spring AI reads servers.json and executes:
+      npx -y @modelcontextprotocol/server-filesystem \
+      "C:/Users/Arijit/Documents" \
+      "D:/Projects"
+    Then it communicates with that process over STDIO (standard input/output).
+
+  Overall flow :
+    servers.json
+          │
+          ▼
+    Spring AI MCP Client
+          │
+    Starts: npx -y @modelcontextprotocol/server-filesystem ...
+          │
+          ▼
+    Filesystem MCP Server
+          │
+          ▼
+    Tools Exposed:
+    - read_file
+    - write_file
+    - list_directory
+    - search_files
+*/
